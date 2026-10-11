@@ -30,15 +30,6 @@ The .NET 8 SDK is required because the app runs through the `dotnet` host. Start
 
 Lab and Build cmd PATH is an allowlist (System32, System32\Wbem, PowerShell, then `%SystemRoot%`) plus only those parent PATH directories that contain `git.exe`, `grok.exe`, or `wmic.exe`. `wmic.exe` is optional. The required/optional split is documentation only and does not change behaviour: every name is looked up with `isfile`, and a miss never fails the hub. `python.exe` and `py.exe` are not look-for names. A folder that holds only `python.exe` or `py.exe` is not added. Any folder under `...\Microsoft\WindowsApps` is skipped. The whole parent PATH is never copied.
 
-## Hand-apply #25
-
-On the live PC tree, before Start All:
-
-1. Confirm `.hbc-staging` is absent from the live hub folder.
-2. Confirm `HBC_STAGING` is unset in that process (never `setx`).
-
-First-decision-final (DUPLICATE / ALREADY_DECIDED) applies to watcher/handoff jobs. Hub-pane bus jobs are already single-run via the seen list and claim.
-
 ## Smoke list
 
 In the Build pane, with `HBC_PASS_GROK_AUTH` unset:

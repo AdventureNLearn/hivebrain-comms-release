@@ -77,9 +77,9 @@ A signed `time` more than 24 hours older than the watcher's clock is `STALE`. A 
 
 This amends live rule 12 (routed). It does not replace it.
 
-Amendment: `routed:` is written as `routed: <Grok Bot|Lead> <ISO-8601 with offset>`, for example `routed: Lead 2026-10-10T15:05:00-04:00`. The time uses the same ISO form as rule 11. It must not be in the future and must not be later than the job's `time`. There are no aliases: `GB`, `grok bot`, and `GrokBot` are `BAD_ROUTED`. The signer is at least as strict as the hub and will not sign an empty, bare, datetime-only, or `GB` routed value.
+Amendment: `routed:` is written as `routed: <owner> <ISO-8601 with offset>`, for example `routed: Hub 2026-10-10T15:05:00-04:00`. The owner is the lane owner. Shipped defaults are Hub and Builder. The time uses the same ISO form as rule 11. It must not be in the future and must not be later than the job's `time`. There are no aliases: `GB` is `BAD_ROUTED`. The signer is at least as strict as the hub and will not sign an empty, bare, datetime-only, or `GB` routed value.
 
-P4c (rev 6). The signer refuses with the hub's exact codes: `MISSING_FIELD`, `BAD_PRIORITY`, `BAD_PANE`, and `BAD_VERB` (banned words in the job text). A header field that continues onto another line is `BAD_FIELD`; only `job` and `done-when` may span lines. `from` must equal `-Owner` exactly (`GrokBot` → `Grok Bot`, `Lead` → `Lead`) or the refusal is `OWNER_MISMATCH`. The banned-verb list lives in one shared file, `hub/banned-verbs.txt`, which both the signer and the hub load. The hub still re-checks every field after the signature.
+P4c (rev 6). The signer refuses with the hub's exact codes: `MISSING_FIELD`, `BAD_PRIORITY`, `BAD_PANE`, and `BAD_VERB` (banned words in the job text). A header field that continues onto another line is `BAD_FIELD`; only `job` and `done-when` may span lines. `from` must equal `-Owner` exactly or the refusal is `OWNER_MISMATCH`. The banned-verb list lives in one shared file, `hub/banned-verbs.txt`, which both the signer and the hub load. The hub still re-checks every field after the signature.
 
 A missing `routed:` line is `NOT_ROUTED`. If `routed` has no router name, names an unknown router, or has a bad time, it is `BAD_ROUTED`.
 
@@ -87,7 +87,7 @@ A missing `routed:` line is `NOT_ROUTED`. If `routed` has no router name, names 
 
 This amends live rule 13. It does not replace it.
 
-Amendment: times used with this rule, including `-EnforceAt` on the signer, are ISO 8601 with an explicit offset, for example `2026-10-10T15:05:00-04:00`. `Sign-BusJob.ps1` fills in `time` in that form when it signs. `routed` must already be `Grok Bot` or `Lead` plus that ISO form.
+Amendment: times used with this rule, including `-EnforceAt` on the signer, are ISO 8601 with an explicit offset, for example `2026-10-10T15:05:00-04:00`. `Sign-BusJob.ps1` fills in `time` in that form when it signs. `routed` must already be the lane owner plus that ISO form.
 
 ## Rule 14. Stop lines (P1)
 

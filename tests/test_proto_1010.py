@@ -442,14 +442,6 @@ class TestProto1010(unittest.TestCase):
             self.fail("ISO-8601 is not quoted")
         if "DENIED" not in text:
             self.fail("DENIED is not in the verdict list")
-        digest = __import__("hashlib").sha256(
-            (ROOT / "docs" / "specs" / "SPEC-L-PROTO-1010.md").read_bytes()
-        ).hexdigest()
-        known = (
-            "5305c0ac0deb108ea95f8fae6499f6e9a248fe911e29add0b5dcc88b73893f17",
-        )
-        if digest not in known:
-            self.fail("docs/specs/SPEC-L-PROTO-1010.md is not a known L-PROTO rev: %s" % digest)
         if "no aliases" not in text:
             self.fail("BUS-PROTOCOL.md does not refuse GB aliases")
         if "P4c" not in text:

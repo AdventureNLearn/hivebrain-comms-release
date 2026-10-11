@@ -2,13 +2,13 @@
 
 HMAC-SHA256 over a canonical field string. The hub (`hub/sigverify.py`) checks every job before approve and again inside `run_pane()`. The hub is always strict: no soft window, no date logic, and no off switch. `tools/Sign-BusJob.ps1` is the signer and the agent-side `-Verify` reference. The hub does not shell out to that script.
 
-When signing (not `-Verify`), the script fills in `time` with the current US Eastern clock as ISO 8601 with an explicit offset, formatted with `InvariantCulture` so a locale such as `fi-FI` cannot change the separators. `routed` must already be exactly `<router> <ISO-8601 with offset>`, and that router name must match `-Owner` from `lanes.local.json` or the built-in table (defaults `Hub` / `Builder`; `GrokBot` → `Grok Bot` and `Lead` → `Lead` remain recognized CLI owners). The signer then refreshes the routed ISO to the same clock as `time`. It refuses empty `routed`, a bare router name, datetime-only, `GB`, `GB, ...`, and any other form the hub would refuse. Exit 3. There is no GB alias. A `pane` value with surrounding whitespace is `BAD_PANE`; the signer never trims that field. Exit 3. P4c: the signer refuses with the hub's exact codes `MISSING_FIELD`, `BAD_PRIORITY`, `BAD_PANE`, and `BAD_VERB`. A header field that continues onto another line is `BAD_FIELD`; only `job` and `done-when` may span lines. `from` must equal `-Owner` exactly (`GrokBot` → `Grok Bot`, `Lead` → `Lead`) or `OWNER_MISMATCH`. Banned verbs come from `hub/banned-verbs.txt` only; the hub loads the same file and re-checks. A `time:` or `routed:` line with no space after the colon is refused with exit 3 and a clear message. The script never prints `SIGNED` for a block the hub would reject as `BAD_SIG`.
+When signing (not `-Verify`), the script fills in `time` with the current US Eastern clock as ISO 8601 with an explicit offset, formatted with `InvariantCulture` so a locale such as `fi-FI` cannot change the separators. `routed` must already be exactly `<router> <ISO-8601 with offset>`, and that router name must match `-Owner` from `lanes.local.json` or the built-in table (defaults `Hub` / `Builder`). The signer then refreshes the routed ISO to the same clock as `time`. It refuses empty `routed`, a bare router name, datetime-only, `GB`, `GB, ...`, and any other form the hub would refuse. Exit 3. There is no GB alias. A `pane` value with surrounding whitespace is `BAD_PANE`; the signer never trims that field. Exit 3. P4c: the signer refuses with the hub's exact codes `MISSING_FIELD`, `BAD_PRIORITY`, `BAD_PANE`, and `BAD_VERB`. A header field that continues onto another line is `BAD_FIELD`; only `job` and `done-when` may span lines. `from` must equal `-Owner` exactly or `OWNER_MISMATCH`. Banned verbs come from `hub/banned-verbs.txt` only; the hub loads the same file and re-checks. A `time:` or `routed:` line with no space after the colon is refused with exit 3 and a clear message. The script never prints `SIGNED` for a block the hub would reject as `BAD_SIG`.
 
 `-EnforceAt` on the script is optional. It must be a full ISO time with an offset. A missing, unreadable, or past value means enforce now. A future value only softens the agent-side check; it never changes the hub. The shipped default is to enforce now. See rule 13 in the user's bus protocol file.
 
 `-TestKeyPath` is a command-line test seam only. When it is set, the script prints `TEST-KEY`. A `-Verify` result of OK with `-TestKeyPath` proves nothing about a real owner key.
 
-Keys live in the user's `.grok` keys folder, one DPAPI blob per owner. Default filenames are `bus-hub.bin` and `bus-builder.bin`. A local `lanes.local.json` (gitignored) can rename owners, inboxes, and key files (`bus-lead.bin`, `bus-grokbot.bin` remain valid names). This file never contains keys or signature values.
+Keys live in the user's `.grok` keys folder, one DPAPI blob per owner. Default filenames are `bus-hub.bin` and `bus-builder.bin`. A local `lanes.local.json` (gitignored) can rename owners, inboxes, and key files. This file never contains keys or signature values.
 
 Format v1 is retired. The hub refuses a job that is not `v=2` as `SPOOFED` / `OLD_FORMAT`. There is no v1 fallback. Queued v1 jobs must be re-signed.
 
@@ -75,14 +75,14 @@ The `sig` field is the HMAC-SHA256 digest as 64 lowercase hex characters. Upperc
 
 These vectors fix the canonical string. Tests make a temporary test key, compute the HMAC, and delete the key afterwards. Real owner keys are never used. Signature hex is not stored here.
 
-### Vector 1 — Lead, all signed fields filled
+### Vector 1 — Hub, all signed fields filled
 
 Bus fields:
 
 ```
 id: vec-1
 v: 2
-from: Lead
+from: Hub
 to: Build
 lane: lab
 priority: normal
@@ -98,7 +98,7 @@ Canonical string (LF between lines, no trailing LF):
 ```
 v=2
 id=vec-1
-from=Lead
+from=Hub
 to=Build
 lane=lab
 priority=normal
@@ -109,14 +109,14 @@ job=list lab pane files
 done-when=the pane lists its files
 ```
 
-### Vector 2 — Grok Bot, inner whitespace collapsed
+### Vector 2 — Builder, inner whitespace collapsed
 
 Bus fields:
 
 ```
 id: vec-2
 v: 2
-from: Grok Bot
+from: Builder
 to: Build
 lane: lab
 priority: urgent
@@ -132,7 +132,7 @@ Canonical string:
 ```
 v=2
 id=vec-2
-from=Grok Bot
+from=Builder
 to=Build
 lane=lab
 priority=urgent
@@ -143,14 +143,14 @@ job=list lab pane files
 done-when=the pane lists its files
 ```
 
-### Vector 3 — Lead, missing `routed` and `pane`
+### Vector 3 — Hub, missing `routed` and `pane`
 
 Bus fields (`routed` and `pane` omitted; both signed empty):
 
 ```
 id: vec-3
 v: 2
-from: Lead
+from: Hub
 to: Build
 lane: lab
 priority: normal
@@ -164,7 +164,7 @@ Canonical string (empty `routed` and `pane` still present):
 ```
 v=2
 id=vec-3
-from=Lead
+from=Hub
 to=Build
 lane=lab
 priority=normal
@@ -175,14 +175,14 @@ job=list lab pane files
 done-when=the pane lists its files
 ```
 
-### Vector 4 — Lead, continuation line plus signed `pane`
+### Vector 4 — Hub, continuation line plus signed `pane`
 
 Bus fields (`job` continues on the next line; `pane` is its own signed key):
 
 ```
 id: vec-4
 v: 2
-from: Lead
+from: Hub
 to: Build
 lane: lab
 priority: normal
@@ -199,7 +199,7 @@ Canonical string (`pane` is hashed; the continuation is part of `job`):
 ```
 v=2
 id=vec-4
-from=Lead
+from=Hub
 to=Build
 lane=lab
 priority=normal
