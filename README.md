@@ -20,7 +20,7 @@ If you would not give a stranger a shell on this account, run the app in a VM or
 
 ## What it is
 
-HiveBrainComms is a free, open-source (MIT) Windows app that brings your AI agents and tools into one window on your own PC. SuperGrok, X, and Imagine sit in tabs that keep your sign-ins, your Grok build terminal runs inside the app (up to 8 sessions side by side), and a routing view shows where each job went and when.
+HiveBrainComms is a free, open-source (MIT) Windows app that brings your AI agents and tools into one window on your own PC. The window has five tabs, in this order: SuperGrok, X, Imagine, Build, and Control. SuperGrok, X, and Imagine keep your sign-in in their own browser view. Build runs up to 8 terminal sessions side by side. Control is the status desk.
 
 ## The idea: hub-first routing
 
@@ -31,12 +31,12 @@ Many multi-agent setups get messy because every agent talks to every other one a
 - **Plain-text jobs.** Each job is a readable block in a text file that says who sent it, who it's for, when, and what "done" means. You can read every job and every return.
 - **Signed jobs.** Jobs carry an HMAC-SHA256 signature made with a key that only your Windows account can read. The hub checks it before approve and again before run, so a faked or edited job is refused.
 - **Routed only.** The build agent is instructed to run only jobs the hub has routed, and it writes back pickup and finish times.
-- **Start All.** One button turns on the hub if it's down, opens the build session, and opens Grok Bot minimized. A second click focuses what's already open instead of opening copies.
+- **Start All.** One button turns on the hub if it's down and opens the build session. If Grok Bot is installed, the same button opens it minimized beside the window. Grok Bot is not a tab. A second click focuses what's already open instead of opening copies.
 
 ## What it does for you
 
 - **Less window chaos.** Your tools and terminals live in one place.
-- **You can see everything.** What was asked, who's on it, and what came back are all in readable files and the routing view.
+- **You can see everything.** What was asked, who's on it, and what came back are in readable files and on the Control tab.
 - **You stay in control.** The agents follow a rule that nothing is sent, posted, pushed, deleted, or made public without your yes, and lab jobs in the hub need your Approve.
 - **Work doesn't vanish.** Skipped or misrouted jobs get flagged and rerouted instead of dropped.
 - **No API bill.** It runs on the subscriptions you already have (SuperGrok and the Grok CLI), not pay-per-call API keys.
@@ -68,7 +68,17 @@ Open-HiveBrainComms-Shell.cmd
 
 The first command builds `Shell.dll`. The launcher stops until that file exists. `pip` installs the hub packages. Then `Open-HiveBrainComms-Shell.cmd` starts the hub if it's down, then opens the app. The Auto-start hub checkbox is off unless you turn it on in settings. The app runs through the .NET 8 host (`dotnet Shell.dll`), which also works on PCs where Smart App Control blocks unsigned programs. The hub page is http://127.0.0.1:8107/. Live uses the default port 8107. `HBC_HUB_PORT` is process-only (an integer 1024-65535 on 127.0.0.1); never `setx` it. A missing or refused value stays 8107 and is logged. Staging is never inferred from the port: it requires process-only `HBC_STAGING=1` and a `.hbc-staging` marker in ROOT.
 
-The app has tabs for SuperGrok, Imagine, X, Freebots, Build, and Hub. The Build tab holds up to 8 sessions in an automatic grid. The first session is the bus watcher, and extra sessions are added only with the button in that tab.
+The shell builds five tabs, in this order:
+
+| Tab | What it shows |
+|---|---|
+| SuperGrok | grok.com in its own browser view. Keeps your sign-in. The app does not type into it. |
+| X | The X site in its own view. |
+| Imagine | Grok Imagine in its own view. |
+| Build | Up to 8 terminal sessions. The first is the bus watcher. Extra ones only if you add them. |
+| Control | Health for the hub, the bus, and the build pane. Signing mode. Usage limits you type yourself. A job board, a needs-you list, and a status feed. Buttons: Refresh usage, Restart Build only, and Start All. |
+
+Hub, Freebots, and Grok Bot are not tabs. An old window setting that still names one of those opens SuperGrok instead. Grok Bot, when it is installed, opens minimized beside the window because it cannot be embedded.
 
 ## Bus
 
@@ -76,16 +86,16 @@ The hub's lab bus uses files in `bus/` (this is separate from any live bus you r
 
 ## Web panels
 
-SuperGrok, X, Imagine, and Freebots are plain browser views. The app doesn't inject scripts, read page content, or strip framing headers, and the queue and build agent never click or type in those panels.
+SuperGrok, X, and Imagine are plain browser views. The app doesn't inject scripts, read page content, or strip framing headers, and the queue and build agent never click or type in those panels.
 
 ## Off by default
 
-The app doesn't read, relay, or show Freebots or HiveBrain game chat. The Freebots tab is only a plain view of the site.
+There is no Freebots tab. The app does not read, relay, or show Freebots chat or HiveBrain game chat. Nothing from those sites is sent into the hub or the bus.
 
 ## Limits
 
 - Windows only.
-- It needs the Grok CLI, SuperGrok, and the Grok Bot desktop app. Grok Bot can't be embedded, so it opens beside the app, minimized.
+- It needs the Grok CLI and SuperGrok. Grok Bot is optional and is not a tab. When Start All finds `Grok Bot.exe`, it opens that app minimized beside the window.
 - Agents still have to follow lane and routing rules.
 - The banned-verb list is `hub/banned-verbs.txt` only. The signer and the hub both load that file. The list has to be complete.
 - DPAPI keys only protect against other Windows users, not against code running as the same user.
