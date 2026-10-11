@@ -1,0 +1,95 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Build</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.3.0/css/xterm.min.css">
+<style>
+  html, body { margin: 0; height: 100%; background: #0f1115; color: #cfd6e4; font: 13px "Segoe UI", sans-serif; overflow: hidden; }
+  #bar { height: 30px; display: flex; align-items: center; gap: 8px; padding: 0 8px; background: #171a21; }
+  #bar button { background: #22262f; color: #cfd6e4; border: 0; padding: 4px 10px; border-radius: 4px; cursor: pointer; }
+  #bar button:hover { background: #2c313c; }
+  #bar .note { color: #8a93a6; }
+  #grid { position: absolute; top: 30px; left: 0; right: 0; bottom: 0; display: grid; gap: 2px; background: #0b0d10; }
+  .pane { position: relative; background: #0f1115; min-width: 0; min-height: 0; }
+  .pane .head { height: 22px; display: flex; align-items: center; justify-content: space-between; padding: 0 8px; background: #151820; color: #8a93a6; font-size: 12px; }
+  .pane .head.watch { color: #3ddc84; }
+  .pane .head button { background: none; border: 0; color: #8a93a6; cursor: pointer; font-size: 14px; }
+  .pane .term { position: absolute; top: 22px; left: 4px; right: 0; bottom: 0; }
+</style>
+</head>
+<body>
+<div id="bar"><button id="add">+ Build session</button><span class="note" id="note"></span></div>
+<div id="grid"></div>
+<script src="https://cdn.jsdelivr.net/npm/xterm@5.3.0/lib/xterm.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.8.0/lib/xterm-addon-fit.min.js"></script>
+<script>
+const token = new URLSearchParams(location.search).get("token") || "";
+const grid = document.getElementById("grid"), note = document.getElementById("note");
+const MAX = 8, panes = [];
+const layout = { 1: [1, 1], 2: [2, 1], 3: [2, 2], 4: [2, 2], 5: [3, 2], 6: [3, 2], 7: [4, 2], 8: [4, 2] };
+let layoutTimer = 0;
+function relayout() {
+  clearTimeout(layoutTimer);
+  layoutTimer = setTimeout(applyLayout, 150);
+}
+function applyLayout() {
+  const [c, r] = layout[panes.length] || [1, 1];
+  grid.style.gridTemplateColumns = `repeat(${c}, 1fr)`;
+  grid.style.gridTemplateRows = `repeat(${r}, 1fr)`;
+  const fs = panes.length <= 1 ? 14 : panes.length <= 4 ? 13 : 12;
+  note.textContent = `${panes.length} of ${MAX} sessions` + (panes.length === 1 ? " (bus watcher)" : "");
+  panes.forEach(p => {
+    if (p.term.options.fontSize !== fs) p.term.options.fontSize = fs;
+    fit(p);
+  });
+}
+function fit(p) {
+  try { p.fit.fit(); } catch (e) {}
+  const cols = p.term.cols, rows = p.term.rows;
+  if (p.sentCols === cols && p.sentRows === rows) return;
+  if (p.socket && p.socket.readyState === 1) {
+    p.socket.send("\u0000resize:" + cols + "," + rows);
+    p.sentCols = cols;
+    p.sentRows = rows;
+  }
+}
+function freeId() {
+  if (!panes.some(p => p.id === "build")) return "build";
+  for (let i = 2; i <= MAX; i++) if (!panes.some(p => p.id === "build" + i)) return "build" + i;
+  return null;
+}
+function addPane() {
+  if (panes.length >= MAX) { note.textContent = "Max 8 Build sessions."; return; }
+  const id = freeId();
+  console.log("pane open " + id);
+  note.textContent = "Opened " + id + ".";
+  const el = document.createElement("div"); el.className = "pane";
+  const head = document.createElement("div"); head.className = "head" + (id === "build" ? " watch" : "");
+  head.innerHTML = `<span>${id === "build" ? "Build (bus watcher)" : "Build " + id.slice(5)}</span>`;
+  const close = document.createElement("button"); close.textContent = "×"; close.title = "Close this pane (the watcher session keeps running)";
+  head.appendChild(close);
+  const box = document.createElement("div"); box.className = "term";
+  el.append(head, box); grid.appendChild(el);
+  const term = new Terminal({ cursorBlink: true, fontSize: 14, theme: { background: "#0f1115" } });
+  const fitAddon = new FitAddon.FitAddon(); term.loadAddon(fitAddon); term.open(box);
+  const p = { id, el, term, fit: fitAddon, socket: null };
+  panes.push(p);
+  close.onclick = () => { if (p.socket) p.socket.close(); term.dispose(); el.remove(); panes.splice(panes.indexOf(p), 1); relayout(); };
+  if (!token) { term.writeln("Hub token is missing. The terminal stays closed."); relayout(); return; }
+  const s = new WebSocket("ws://127.0.0.1:8107/term/" + id + "?token=" + encodeURIComponent(token));
+  p.socket = s;
+  s.addEventListener("open", () => fit(p));
+  s.addEventListener("message", ev => term.write(ev.data));
+  s.addEventListener("close", () => term.writeln("\r\n[Session disconnected. The hub may be down. Turn the hub on, then reload this tab.]"));
+  s.addEventListener("error", () => term.writeln("\r\n[Could not reach the hub on 127.0.0.1:8107.]"));
+  term.onData(d => { if (s.readyState === 1) s.send(d); });
+  relayout();
+}
+document.getElementById("add").onclick = addPane;
+window.addEventListener("resize", relayout);
+new ResizeObserver(relayout).observe(grid);
+addPane();
+</script>
+</body>
+</html>

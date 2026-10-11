@@ -1,0 +1,8 @@
+# Banned verbs in bus job text. One phrase per line.
+# Single source for hub/protocol.py and tools/Sign-BusJob.ps1.
+send
+post
+pay
+delete
+git push
+publish

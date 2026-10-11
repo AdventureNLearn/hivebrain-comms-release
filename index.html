@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HiveBrainComms</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.3.0/css/xterm.min.css">
+<link rel="stylesheet" href="desk.css">
+</head>
+<body>
+<header>
+  <h1>HiveBrainComms</h1>
+  <p id="flag">LAB - not the live bus</p>
+</header>
+<p class="off">Freebots: view only, in its own tab. No chat relay into the hub or the bus. HiveBrain game chat: off.</p>
+<p class="links">
+  <button type="button" data-open="x">Open X</button>
+  <button type="button" data-open="imagine">Open Grok Imagine</button>
+  <button type="button" data-open="grokbot">Open Grok Bot</button>
+</p>
+<main>
+  <section class="main-pane">
+    <h2>SuperGrok</h2>
+    <p>Main research pane. grok.com refuses to be framed by this page (X-Frame-Options DENY). It opens in your browser until a desktop shell is approved.</p>
+    <button type="button" data-open="grok">Open SuperGrok</button>
+  </section>
+  <section>
+    <h2>Imagine lanes</h2>
+    <p><span class="badge">Paste bridge on</span><span class="badge off">API lane inactive</span></p>
+    <p>The paste bridge is the default. The API lane stays off until you add an xAI key.</p>
+    <h2>Hub</h2>
+    <p>Read from the lab bus only. Nothing is written here.</p>
+    <table id="hub"><tbody></tbody></table>
+  </section>
+  <section>
+    <h2>Panes</h2>
+    <p>Each pane is a terminal in this page, with its own home. Type grok login in the pane. This page does not see your password.</p>
+    <h3>Pane 1</h3>
+    <div id="term-1" class="term"></div>
+    <h3>Pane 2</h3>
+    <div id="term-2" class="term"></div>
+    <pre id="sessions">No sessions yet.</pre>
+  </section>
+  <section>
+    <h2>Control</h2>
+    <h3>NEEDS-YOU</h3>
+    <ul id="needs-you"></ul>
+    <h2>Approvals</h2>
+    <ul id="queue"></ul>
+    <h3>Lab bus (read only)</h3>
+    <pre id="bus">No bus files.</pre>
+    <h3>Log</h3>
+    <pre id="log">No decisions yet.</pre>
+  </section>
+</main>
+<p id="status" role="status"></p>
+<script src="https://cdn.jsdelivr.net/npm/xterm@5.3.0/lib/xterm.min.js"></script>
+<script>window.HBC_TOKEN = "{{TOKEN}}";</script>
+<script src="desk.js"></script>
+</body>
+</html>

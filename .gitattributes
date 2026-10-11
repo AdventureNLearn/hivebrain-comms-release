@@ -1,0 +1,6 @@
+# Sealed spec bytes are hashed (L-PROTO 5305c0ac…, TOKEN-HARDEN rev 5 cb5a99de…,
+# BUILD-CLAIM 5c2fcc49…). Never let core.autocrlf rewrite them on Windows checkout.
+docs/specs/** -text
+# SHA256 fixtures must stay LF so Windows checkout matches the recorded digest.
+tests/fixtures/build.html.506eebd text eol=lf
+tests/fixtures/build.html.13e904b text eol=lf

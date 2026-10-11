@@ -1,0 +1,17 @@
+body { margin: 0; font: 16px/1.45 "Segoe UI", sans-serif; background: #0f1115; color: #f2f4f8; }
+header, main, .off, #status { padding: 12px 20px; }
+header { display: flex; justify-content: space-between; align-items: end; }
+h1, h2 { margin: 0 0 8px; }
+#flag { margin: 0; padding: 6px 10px; border: 1px solid #3ddc84; color: #3ddc84; font-weight: 700; }
+main { display: grid; grid-template-columns: 1.4fr 1fr; gap: 12px; }
+.main-pane { grid-column: 1 / -1; }
+table { width: 100%; border-collapse: collapse; }
+td, th { text-align: left; padding: 4px 6px; border-bottom: 1px solid #2a2f3a; font-size: 14px; }
+section { background: #171a21; border: 1px solid #2a2f3a; padding: 12px; }
+pre { white-space: pre-wrap; background: #10131a; padding: 8px; max-height: 240px; overflow: auto; }
+.badge { display: inline-block; margin-right: 8px; padding: 2px 8px; border: 1px solid #3ddc84; color: #3ddc84; border-radius: 10px; }
+.badge.off { color: #8b93a3; border-color: #8b93a3; }
+.term { height: 220px; background: #1c1915; margin-bottom: 12px; }
+button { font: inherit; margin-right: 8px; }
+li { margin: 8px 0; }
+@media (max-width: 800px) { main { grid-template-columns: 1fr; } }

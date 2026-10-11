@@ -1,0 +1,19 @@
+{
+  "status": "BUILDER-STATUS.md",
+  "lanes": [
+    {
+      "id": "Hub",
+      "owner": "Hub",
+      "inbox": "HUB-TO-BUILD.md",
+      "outbox": "BUILD-TO-HUB.md",
+      "key": "bus-hub.bin"
+    },
+    {
+      "id": "Builder",
+      "owner": "Builder",
+      "inbox": "BUILDER-TO-BUILD.md",
+      "outbox": "BUILD-TO-BUILDER.md",
+      "key": "bus-builder.bin"
+    }
+  ]
+}

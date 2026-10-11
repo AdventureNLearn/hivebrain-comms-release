@@ -1,0 +1,54 @@
+/* HiveBrainComms design tokens v1 (2026-10-11)
+   Derived from the LPIN Compass Rose + holo starter palettes (navy / gold / emerald / cyan),
+   toned down for long daily use and checked for WCAG AA contrast on the surface colors. */
+:root {
+  /* Surfaces (darkest to lightest) */
+  --hbc-bg:            #060d1a;  /* window background, WebView2 DefaultBackgroundColor */
+  --hbc-surface:       #0a1628;  /* tab bar, panels  (kit "navy") */
+  --hbc-surface-2:     #0f2036;  /* cards, terminal tiles */
+  --hbc-surface-3:     #16293f;  /* hover, popups */
+  --hbc-border:        #1f3a57;
+  --hbc-border-strong: #2d5277;
+
+  /* Text */
+  --hbc-text:          #e6f1ff;  /* 15.9:1 on surface */
+  --hbc-text-2:        #9fb3c8;  /* 8.4:1 */
+  --hbc-text-3:        #8aa0b8;  /* >=4.9:1 on surface-3, use for hints */
+
+  /* Brand / accent */
+  --hbc-emerald:       #00e59a;  /* primary accent: active tab, focus, OK */
+  --hbc-emerald-glow:  rgba(0,229,154,.35);
+  --hbc-gold:          #d4af37;  /* brand mark, headings, "attention" not "error" */
+  --hbc-gold-2:        #f0d060;
+  --hbc-cyan:          #00d4ff;  /* links, info, secondary data */
+  --hbc-on-accent:     #06231a;  /* text on emerald buttons, 10:1 */
+
+  /* Status (always paired with icon + word, never color alone) */
+  --hbc-ok:            #00e59a;
+  --hbc-warn:          #ffb84d;
+  --hbc-error:         #ff5c5c;
+  --hbc-info:          #00d4ff;
+  --hbc-off:           #6f8299;
+
+  /* Type */
+  --hbc-font-ui:   "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+  --hbc-font-mono: "Cascadia Mono", "Cascadia Code", Consolas, monospace;
+  --hbc-fs-xs: 11px; --hbc-fs-sm: 12px; --hbc-fs-md: 14px; --hbc-fs-lg: 16px; --hbc-fs-xl: 20px; --hbc-fs-2xl: 28px;
+  --hbc-fw-regular: 400; --hbc-fw-semibold: 600; --hbc-fw-bold: 700;
+
+  /* Spacing: 4px base */
+  --hbc-s1: 4px; --hbc-s2: 8px; --hbc-s3: 12px; --hbc-s4: 16px; --hbc-s5: 24px; --hbc-s6: 32px; --hbc-s7: 48px;
+
+  /* Shape + depth */
+  --hbc-r-sm: 6px; --hbc-r-md: 10px; --hbc-r-lg: 16px; --hbc-r-pill: 999px;
+  --hbc-shadow-1: 0 2px 8px rgba(0,0,0,.35);
+  --hbc-shadow-pop: 0 12px 32px rgba(0,0,0,.55), 0 0 0 1px var(--hbc-border-strong);
+  --hbc-glow: 0 0 0 1px rgba(0,229,154,.45), 0 0 18px rgba(0,229,154,.25);
+
+  /* Sizes */
+  --hbc-titlebar-h: 44px; --hbc-tabbar-h: 44px; --hbc-toolbar-h: 36px; --hbc-statusbar-h: 26px; --hbc-icon: 18px;
+
+  /* Motion */
+  --hbc-dur-fast: 120ms; --hbc-dur: 180ms; --hbc-ease: cubic-bezier(.2,.8,.2,1);
+}
+@media (prefers-reduced-motion: reduce) { :root { --hbc-dur-fast: 0ms; --hbc-dur: 0ms; } }
