@@ -31,7 +31,7 @@ Many multi-agent setups get messy because every agent talks to every other one a
 - **Plain-text jobs.** Each job is a readable block in a text file that says who sent it, who it's for, when, and what "done" means. You can read every job and every return.
 - **Signed jobs.** Jobs carry an HMAC-SHA256 signature made with a key that only your Windows account can read. The hub checks it before approve and again before run, so a faked or edited job is refused.
 - **Routed only.** The build agent is instructed to run only jobs the hub has routed, and it writes back pickup and finish times.
-- **Start All.** One button turns on the hub if it's down and opens the build session. If Grok Bot is installed, the same button opens it minimized beside the window. Grok Bot is not a tab. A second click focuses what's already open instead of opening copies.
+- **Start All.** One button turns on the hub if it's down and opens the build session. A second click focuses what's already open instead of opening copies.
 
 ## What it does for you
 
@@ -78,8 +78,6 @@ The shell builds five tabs, in this order:
 | Build | Up to 8 terminal sessions. The first is the bus watcher. Extra ones only if you add them. |
 | Control | Health for the hub, the bus, and the build pane. Signing mode. Usage limits you type yourself. A job board, a needs-you list, and a status feed. Buttons: Refresh usage, Restart Build only, and Start All. |
 
-Hub, Freebots, and Grok Bot are not tabs. An old window setting that still names one of those opens SuperGrok instead. Grok Bot, when it is installed, opens minimized beside the window because it cannot be embedded.
-
 ## Bus
 
 The hub's lab bus uses files in `bus/` (this is separate from any live bus you run). Each sender writes its own file, and results go to the matching return file. A job block needs `id`, `from`, `to`, `lane`, `priority`, `time`, `job`, and `done-when`, plus `v: 2`, a `routed` line, and a `sig` line on a signed bus. Format is v2. `pane` is optional: when it is missing it is signed empty and the hub derives it from the signed `to` and `lane`. The `from` line must match the file owner. A malformed or unsigned block is refused and not queued. `tools/Sign-BusJob.ps1` signs and verifies v2 jobs only. The hub is always strict, with no soft window, no date logic, and no off switch. See `docs/SIGNING.md`.
@@ -88,14 +86,10 @@ The hub's lab bus uses files in `bus/` (this is separate from any live bus you r
 
 SuperGrok, X, and Imagine are plain browser views. The app doesn't inject scripts, read page content, or strip framing headers, and the queue and build agent never click or type in those panels.
 
-## Off by default
-
-There is no Freebots tab. The app does not read, relay, or show Freebots chat or HiveBrain game chat. Nothing from those sites is sent into the hub or the bus.
-
 ## Limits
 
 - Windows only.
-- It needs the Grok CLI and SuperGrok. Grok Bot is optional and is not a tab. When Start All finds `Grok Bot.exe`, it opens that app minimized beside the window.
+- It needs the Grok CLI and SuperGrok.
 - Agents still have to follow lane and routing rules.
 - The banned-verb list is `hub/banned-verbs.txt` only. The signer and the hub both load that file. The list has to be complete.
 - DPAPI keys only protect against other Windows users, not against code running as the same user.
